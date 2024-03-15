@@ -76,3 +76,8 @@ export class IncomingRequest {
     }
 
 
+export class FormulaRequest{
+    @IsNotEmpty()
+    @IsString()
+    formula : String
+}

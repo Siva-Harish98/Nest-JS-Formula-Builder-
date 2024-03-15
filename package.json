@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "debug": "nodemon --exec \"node --inspect-brk -r ts-node/register\" --watch src src/main.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -23,8 +24,11 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "babel-node": "^0.0.1-security",
+    "chevrotain": "^10.5.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "nodemon": "^3.1.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
