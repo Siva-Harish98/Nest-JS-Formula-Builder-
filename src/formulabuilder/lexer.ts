@@ -39,6 +39,10 @@ import {
     name: 'COUNT',
     pattern: /count/i,
   });
+  export const MAX = createToken({
+    name: 'MAX',
+    pattern: /max/i,
+  });
   export  const NumberLiteral = createToken({
     name: 'NumberLiteral',
     pattern: /[0-9]\d*/,
@@ -48,9 +52,9 @@ import {
     pattern: /aggregate/i,
   });
 
-  export  const HAPPENDIN = createToken({
-    name: 'HAPPENDIN',
-    pattern: /happendin/i,
+  export  const HAPPENDEDIN = createToken({
+    name: 'HAPPENDEDIN',
+    pattern: /\bHappenedIn\b/i,
   });
   
   export  const LParen = createToken({
@@ -62,7 +66,23 @@ import {
     name: 'RParen',
     pattern: /\)/,
   });
-  
+
+  export const NotOperator = createToken({
+    name: 'NotOperator',
+    pattern: /!/,
+  });
+  // export  const NOT = createToken({
+  //   name: 'NOT',
+  //   pattern: /not/i,
+  //   categories: NotOperator,
+  // });
+
+  // export  const NotOp = createToken({
+  //   name: 'NotOp',
+  //   pattern: /!/,
+  //   categories: NotOperator,
+  // });
+
   export const AlllogicalOperator = createToken({
     name: 'Allogicalop',
     pattern: Lexer.NA,
@@ -70,7 +90,7 @@ import {
   
   export  const Logicalop = createToken({
     name: 'Logicalop',
-    pattern: /\|\||&&|\^|==|!=|<=|>=|<|>|!/,
+    pattern: /\|\||&&|\^|==|!=|<=|>=|<|>/,
     categories: AlllogicalOperator,
   });
   
@@ -86,13 +106,6 @@ import {
     categories: AlllogicalOperator,
   });
   
-  export  const NOT = createToken({
-    name: 'NOT',
-    pattern: /not/i,
-    categories: AlllogicalOperator,
-  });
-
-
   export const WhiteSpace = createToken({
     name: 'WhiteSpace',
     pattern: /\s+/,
@@ -102,11 +115,14 @@ import {
  export const allTokens = [
     WhiteSpace,
     FROM,
+    HAPPENDEDIN,
     ValidUpto,
     NOW,
     WHERE,
     Aggregate,
     COUNT,
+    MAX,
+    NotOperator,
     Identifier,
     NumberLiteral,
     LParen,

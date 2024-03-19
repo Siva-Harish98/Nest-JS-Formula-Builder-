@@ -3,7 +3,7 @@ import {
   AlllogicalOperator,
   FROM,
   NOW,
-  HAPPENDIN,
+  HAPPENDEDIN,
   ValidUpto,
   WHERE,
   LParen,
@@ -11,6 +11,10 @@ import {
   RParen,
   Identifier,
   allTokens,
+  NotOperator,
+  Aggregate,
+  COUNT,
+  MAX
 } from './lexer';
 
 export class GrammerExpression extends CstParser {
@@ -31,6 +35,7 @@ export class GrammerExpression extends CstParser {
       T.CONSUME(FROM);
       T.CONSUME(Identifier);
       T.SUBRULE(T.optionfun);
+      T.SUBRULE2(T.LeastExpression)
     });
 
     T.RULE('optionfun', () => {
@@ -69,64 +74,70 @@ export class GrammerExpression extends CstParser {
     });
 
     T.RULE('otherFunc', () => {
-      T.CONSUME(HAPPENDIN);
+      T.CONSUME(HAPPENDEDIN);
+      T.CONSUME(LParen)
+      T.CONSUME(Identifier)
+      T.CONSUME(RParen)
     });
 
     T.RULE('chkWherecond', () => {
       T.CONSUME(WHERE);
       T.CONSUME(LParen);
-      T.AT_LEAST_ONE(() => {
-        T.OR([
-          {
-            ALT: () => {
-              T.CONSUME(Identifier);
-              this.WhereOporId = true;
-            },
-          },
-          {
-            ALT: () => {
-              T.CONSUME(AlllogicalOperator);
-            },
-          },
-        ]);
-
-        T.SUBRULE(T.wherecndRule);
-      });
+      T.OPTION(()=>{
+        T.CONSUME(NotOperator)
+      })
+      T.CONSUME(Identifier)
+      T.SUBRULE2(T.wherecndRule);    
       T.CONSUME(RParen);
     });
 
+   
+
     T.RULE('wherecndRule', () => {
+      T.AT_LEAST_ONE(()=>{
       T.OPTION(()=>{
+        T.CONSUME(AlllogicalOperator)
+        T.OPTION2(()=>{
+          T.CONSUME(NotOperator)
+        })
         T.OR([
-          {GATE:()=> this.WhereOporId,
-            ALT:()=>{
-            T.CONSUME(AlllogicalOperator)
-            T.SUBRULE(T.checkNumcondtion)
-          }},
-          {ALT:()=>{
-            T.CONSUME(Identifier)
-            T.OPTION2(()=>{
-              T.CONSUME2(AlllogicalOperator)
-              T.OPTION3(()=>{
-                
-              })
-              T.SUBRULE2(T.checkNumcondtion)
-            })
-           
-          }}
-        ])
-       
+          {
+            ALT: () => {
+              T.CONSUME(NumberLiteral);
+            },
+          },
+          {
+            ALT: () => {
+              T.CONSUME(Identifier);
+            },
+          },
+        ]);
        
       })
-     
+      
+    })
+      
+      
     });
 
-T.RULE('checkNumcondtion',()=>{
-  T.OR([
-    {ALT:()=> {T.CONSUME(NumberLiteral)}},
-    {ALT:()=> {T.CONSUME(Identifier)}}
-  ])
-})
+    T.RULE('LeastExpression',()=>{
+      T.SUBRULE(T.AggregateKey)
+    })
+
+    T.RULE('AggregateKey',()=>{
+      T.CONSUME(Aggregate)
+      T.SUBRULE(T.AggregateFunc)
+      T.CONSUME(LParen)
+      T.CONSUME(Identifier)
+      T.CONSUME(RParen)    
+    })
+
+     T.RULE('AggregateFunc',()=>{
+      T.OR([
+        {ALT:()=>{T.CONSUME(COUNT)}},
+        {ALT:()=>{T.CONSUME(MAX)}}
+      ])
+     })
 
 
 
