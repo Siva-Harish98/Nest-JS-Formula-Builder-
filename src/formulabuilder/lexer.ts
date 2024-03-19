@@ -51,6 +51,10 @@ import {
     name: 'Aggregate',
     pattern: /aggregate/i,
   });
+  export  const LastTwelveMonths = createToken({
+    name: 'LastTwelveMonths',
+    pattern: /\blasttwelvemonths\b/i,
+  });
 
   export  const HAPPENDEDIN = createToken({
     name: 'HAPPENDEDIN',
@@ -119,6 +123,7 @@ import {
     ValidUpto,
     NOW,
     WHERE,
+    LastTwelveMonths,
     Aggregate,
     COUNT,
     MAX,

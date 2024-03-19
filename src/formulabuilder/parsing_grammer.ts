@@ -14,7 +14,8 @@ import {
   NotOperator,
   Aggregate,
   COUNT,
-  MAX
+  MAX,
+  LastTwelveMonths,
 } from './lexer';
 
 export class GrammerExpression extends CstParser {
@@ -35,7 +36,7 @@ export class GrammerExpression extends CstParser {
       T.CONSUME(FROM);
       T.CONSUME(Identifier);
       T.SUBRULE(T.optionfun);
-      T.SUBRULE2(T.LeastExpression)
+      T.SUBRULE2(T.LeastExpression);
     });
 
     T.RULE('optionfun', () => {
@@ -57,7 +58,7 @@ export class GrammerExpression extends CstParser {
           },
           {
             ALT: () => {
-              T.SUBRULE2(T.otherFunc);
+              T.SUBRULE2(T.HappendIn);
             },
           },
         ]);
@@ -73,73 +74,86 @@ export class GrammerExpression extends CstParser {
       T.CONSUME(NOW);
     });
 
-    T.RULE('otherFunc', () => {
+    T.RULE('HappendIn', () => {
       T.CONSUME(HAPPENDEDIN);
-      T.CONSUME(LParen)
-      T.CONSUME(Identifier)
-      T.CONSUME(RParen)
+      T.CONSUME(LParen);
+      T.SUBRULE(T.HappendInfunc);
+      T.CONSUME(RParen);
+    });
+
+    T.RULE('HappendInfunc', () => {
+      T.OR([{ ALT: () => T.CONSUME(LastTwelveMonths) }]);
+      T.SUBRULE(T.HappendInfunccond);
+    });
+
+    T.RULE('HappendInfunccond',() => {
+       T.OPTION(()=>{
+        T.CONSUME(LParen)
+        T.CONSUME(Identifier)
+        T.CONSUME(RParen)
+       })
     });
 
     T.RULE('chkWherecond', () => {
       T.CONSUME(WHERE);
       T.CONSUME(LParen);
-      T.OPTION(()=>{
-        T.CONSUME(NotOperator)
-      })
-      T.CONSUME(Identifier)
-      T.SUBRULE2(T.wherecndRule);    
+      T.OPTION(() => {
+        T.CONSUME(NotOperator);
+      });
+      T.CONSUME(Identifier);
+      T.SUBRULE2(T.wherecndRule);
       T.CONSUME(RParen);
     });
 
-   
-
     T.RULE('wherecndRule', () => {
-      T.AT_LEAST_ONE(()=>{
-      T.OPTION(()=>{
-        T.CONSUME(AlllogicalOperator)
-        T.OPTION2(()=>{
-          T.CONSUME(NotOperator)
-        })
-        T.OR([
-          {
-            ALT: () => {
-              T.CONSUME(NumberLiteral);
+      T.AT_LEAST_ONE(() => {
+        T.OPTION(() => {
+          T.CONSUME(AlllogicalOperator);
+          T.OPTION2(() => {
+            T.CONSUME(NotOperator);
+          });
+          T.OR([
+            {
+              ALT: () => {
+                T.CONSUME(NumberLiteral);
+              },
             },
-          },
-          {
-            ALT: () => {
-              T.CONSUME(Identifier);
+            {
+              ALT: () => {
+                T.CONSUME(Identifier);
+              },
             },
-          },
-        ]);
-       
-      })
-      
-    })
-      
-      
+          ]);
+        });
+      });
     });
 
-    T.RULE('LeastExpression',()=>{
-      T.SUBRULE(T.AggregateKey)
-    })
+    T.RULE('LeastExpression', () => {
+      T.SUBRULE(T.AggregateKey);
+    });
 
-    T.RULE('AggregateKey',()=>{
-      T.CONSUME(Aggregate)
-      T.SUBRULE(T.AggregateFunc)
-      T.CONSUME(LParen)
-      T.CONSUME(Identifier)
-      T.CONSUME(RParen)    
-    })
+    T.RULE('AggregateKey', () => {
+      T.CONSUME(Aggregate);
+      T.SUBRULE(T.AggregateFunc);
+      T.CONSUME(LParen);
+      T.CONSUME(Identifier);
+      T.CONSUME(RParen);
+    });
 
-     T.RULE('AggregateFunc',()=>{
+    T.RULE('AggregateFunc', () => {
       T.OR([
-        {ALT:()=>{T.CONSUME(COUNT)}},
-        {ALT:()=>{T.CONSUME(MAX)}}
-      ])
-     })
-
-
+        {
+          ALT: () => {
+            T.CONSUME(COUNT);
+          },
+        },
+        {
+          ALT: () => {
+            T.CONSUME(MAX);
+          },
+        },
+      ]);
+    });
 
     T.performSelfAnalysis();
     this.WhereOporId = false;
