@@ -10,68 +10,73 @@ let formulaBuilderService: FormulaBuilderService;
         it('should tokenize the input it start with From',()=>{
             const Input = 'FROM Employee ValidUpto NOW WHERE(isActiveEmployee && Employee.Age <= 30 && Employee.Age >= 25) Aggregate COUNT(Employee.EmployeeId)'
             const Tokens = formulaBuilderService.TokenizeInput(Input).tokens
-           expect(Tokens).toMatchObject([
-            {image:'FROM',startOffset:0,endOffset:3,tokenType:{name:'FROM'}},
-            {image:'Employee',startOffset:5,endOffset:12,tokenType:{name:'Identifier'}},
-            {image:'ValidUpto',startOffset:14,endOffset:22,tokenType:{name:'ValidUpto'}},
-            {image:'NOW',startOffset:24,endOffset:26,tokenType:{name:'NOW'}},
-            {image:'WHERE',startOffset:28,endOffset:32,tokenType:{name:'WHERE'}},
-            {image:'(',startOffset:33,endOffset:33,tokenType:{name:'LParen'}},
-            {image:'isActiveEmployee',startOffset:34,endOffset:49,tokenType:{name:'Identifier'}},
-            {image:'&&',startOffset:51,endOffset:52,tokenType:{name:'Logicalop'}},
-            {image:'Employee.Age',startOffset:54,endOffset:65,tokenType:{name:'Identifier'}},
-            {image:'<=',startOffset:67,endOffset:68,tokenType:{name:'Logicalop'}},
-            {image:'30',startOffset:70,endOffset:71,tokenType:{name:'NumberLiteral'}},
-            {image:'&&',startOffset:73,endOffset:74,tokenType:{name:'Logicalop'}},
-            {image:'Employee.Age',startOffset:76,endOffset:87,tokenType:{name:'Identifier'}},
-            {image:'>=',startOffset:89,endOffset:90,tokenType:{name:'Logicalop'}},
-            {image:'25',startOffset:92,endOffset:93,tokenType:{name:'NumberLiteral'}},
-            {image:')',startOffset:94,endOffset:94,tokenType:{name:'RParen'}},
-            {image:'Aggregate',startOffset:96,endOffset:104,tokenType:{name:'Aggregate'}},
-            {image:'COUNT',startOffset:106,endOffset:110,tokenType:{name:'COUNT'}},
-            {image:'(',startOffset:111,endOffset:111,tokenType:{name:'LParen'}},
-            {image:'Employee.EmployeeId',startOffset:112,endOffset:130,tokenType:{name:'Identifier'}},
-            {image:')',startOffset:131,endOffset:131,tokenType:{name:'RParen'}},
-           ])
-    
-        })
-    
-    
-        it('Should tokenize the input that contains a WHERE clause with only one condition',()=>{
-            const Input = 'FROM Employee ValidUpto NOW WHERE(isActiveEmployee) Aggregate COUNT(Employee.EmployeeId)'
+            const CstList = formulaBuilderService.ParsingTokens(Tokens)
+           
+            expect(CstList.name).toBe('expression')
+            expect(CstList.children['FromKey'][0]['name']).toBe('FromKey')
+            expect(CstList.children['FromKey'][0]['children']['FROM'][0]['image']).toBe('FROM')
+            expect(CstList.children['FromKey'][0]['children']['Identifier'][0]['image']).toBe('Employee')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['name']).toBe('optionfun')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['Timefunc'][0]['name']).toBe('Timefunc')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['Timefunc'][0]['children']['chkValidupto'][0]['name']).toBe('chkValidupto')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['Timefunc'][0]['children']['chkValidupto'][0]['children']['ValidUptofunct'][0]['name']).toBe('ValidUptofunct')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['Timefunc'][0]['children']['chkValidupto'][0]['children']['ValidUptofunct'][0]['children']['NOW'][0]['image']).toBe('NOW')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['name']).toBe('chkWherecond')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['children']['WHERE'][0]['image']).toBe('WHERE')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['children']['LParen'][0]['image']).toBe('(')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['children']['Identifier'][0]['image']).toBe('isActiveEmployee')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['children']['wherecndRule'][0]['name']).toBe('wherecndRule')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['children']['wherecndRule'][0]['children']['Allogicalop'][0]['image']).toBe('&&')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['children']['wherecndRule'][0]['children']['Identifier'][0]['image']).toBe('Employee.Age')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['children']['wherecndRule'][0]['children']['NumberLiteral'][0]['image']).toBe('30')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['children']['wherecndRule'][0]['children']['NumberLiteral'][1]['image']).toBe('25')
+            expect(CstList.children['FromKey'][0]['children']['optionfun'][0]['children']['chkWherecond'][0]['children']['RParen'][0]['image']).toBe(')')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['name']).toBe('LeastExpression')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['name']).toBe('AggregateKey')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['Aggregate'][0]['image']).toBe('Aggregate')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['AggregateFunc'][0]['name']).toBe('AggregateFunc')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['AggregateFunc'][0]['children']['COUNT'][0]['image']).toBe('COUNT')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['LParen'][0]['image']).toBe('(')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['Identifier'][0]['image']).toBe('Employee.EmployeeId')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['RParen'][0]['image']).toBe(')')
+           })
+
+           it("Should 'thrown an error' because after 'ValidUpto' 'NOW' or any functionality belongs to 'ValidUpto' will come",()=>{
+            const Input = 'FROM Employee ValidUpto WHERE(isActiveEmployee && Employee.Age <= 30 && Employee.Age >= 25) Aggregate COUNT(Employee.EmployeeId)'
             const Tokens = formulaBuilderService.TokenizeInput(Input).tokens
-           expect(Tokens).toMatchObject([
-            {image:'FROM',startOffset:0,endOffset:3,tokenType:{name:'FROM'}},
-            {image:'Employee',startOffset:5,endOffset:12,tokenType:{name:'Identifier'}},
-            {image:'ValidUpto',startOffset:14,endOffset:22,tokenType:{name:'ValidUpto'}},
-            {image:'NOW',startOffset:24,endOffset:26,tokenType:{name:'NOW'}},
-            {image:'WHERE',startOffset:28,endOffset:32,tokenType:{name:'WHERE'}},
-            {image:'(',startOffset:33,endOffset:33,tokenType:{name:'LParen'}},
-            {image:'isActiveEmployee',startOffset:34,endOffset:49,tokenType:{name:'Identifier'}},
-            {image:')',startOffset:50,endOffset:50,tokenType:{name:'RParen'}},
-            {image:'Aggregate',startOffset:52,endOffset:60,tokenType:{name:'Aggregate'}},
-            {image:'COUNT',startOffset:62,endOffset:66,tokenType:{name:'COUNT'}},
-            {image:'(',startOffset:67,endOffset:67,tokenType:{name:'LParen'}},
-            {image:'Employee.EmployeeId',startOffset:68,endOffset:86,tokenType:{name:'Identifier'}},
-            {image:')',startOffset:87,endOffset:87,tokenType:{name:'RParen'}},
-           ])
-    
-          
-    
-        })
-    
-        it('Should tokenize the input that contains a LeastExpression',()=>{
+            const CstList = formulaBuilderService.ParsingTokens(Tokens)
+           expect(CstList).toBe("Expecting token of type --> NOW <-- but found --> 'WHERE' <--")
+            
+           })
+
+
+
+           it('should tokenize the input Having LeastExpression',()=>{
             const Input = 'FROM Employee Aggregate COUNT(Employee.EmployeeId)'
             const Tokens = formulaBuilderService.TokenizeInput(Input).tokens
-           expect(Tokens).toMatchObject([
-            {image:'FROM',startOffset:0,endOffset:3,tokenType:{name:'FROM'}},
-            {image:'Employee',startOffset:5,endOffset:12,tokenType:{name:'Identifier'}},
-            {image:'Aggregate',startOffset:14,endOffset:22,tokenType:{name:'Aggregate'}},
-            {image:'COUNT',startOffset:24,endOffset:28,tokenType:{name:'COUNT'}},
-            {image:'(',startOffset:29,endOffset:29,tokenType:{name:'LParen'}},
-            {image:'Employee.EmployeeId',startOffset:30,endOffset:48,tokenType:{name:'Identifier'}},
-            {image:')',startOffset:49,endOffset:49,tokenType:{name:'RParen'}},
-           ])
+            const CstList = formulaBuilderService.ParsingTokens(Tokens)
+            expect(CstList.name).toBe('expression')
+            expect(CstList.children['FromKey'][0]['name']).toBe('FromKey')
+            expect(CstList.children['FromKey'][0]['children']['FROM'][0]['image']).toBe('FROM')
+            expect(CstList.children['FromKey'][0]['children']['Identifier'][0]['image']).toBe('Employee')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['name']).toBe('LeastExpression')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['name']).toBe('AggregateKey')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['Aggregate'][0]['image']).toBe('Aggregate')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['AggregateFunc'][0]['name']).toBe('AggregateFunc')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['AggregateFunc'][0]['children']['COUNT'][0]['image']).toBe('COUNT')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['LParen'][0]['image']).toBe('(')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['Identifier'][0]['image']).toBe('Employee.EmployeeId')
+            expect(CstList.children['FromKey'][0]['children']['LeastExpression'][0]['children']['AggregateKey'][0]['children']['RParen'][0]['image']).toBe(')')
+           })
+
+           it("Should 'thrown an error' Because of Missing Operators",()=>{
+            const Input = 'FROM Employee ValidUpto NOW WHERE(isActiveEmployee && Employee.Age  30 && Employee.Age >= 25) Aggregate COUNT(Employee.EmployeeId)'
+            const Tokens = formulaBuilderService.TokenizeInput(Input).tokens
+            const CstList = formulaBuilderService.ParsingTokens(Tokens)
+           expect(CstList).toBe("Expecting token of type --> RParen <-- but found --> '30' <--")
+            
+           })
         })
     
-    })
+    
+    
