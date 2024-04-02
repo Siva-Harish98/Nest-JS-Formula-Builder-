@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class Middleware {
+export class Middlewares {
   use(req, res, next) {
     console.log('Request...',req['body']);
     next();

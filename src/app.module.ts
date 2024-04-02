@@ -3,23 +3,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FormulabuilderController } from './formulabuilder/formulabuilder.controller';
 import { FormulaBuilderService } from './formulabuilder/formulabuilderService';
-import { Middleware } from './middlwares/middlware';
+import { Middlewares } from './middlwares/middlware';
 import { SecondMiddleware } from './middlwares/secondMiddlware';
+import { PrismaController } from './prismaApi/prisma.controller';
+import { prismaServiceService } from './prismaApi/prismaService';
 
 @Module({
   imports: [],
-  controllers: [AppController, FormulabuilderController],
-  providers: [AppService,FormulaBuilderService],
+  controllers: [AppController, FormulabuilderController,PrismaController],
+  providers: [AppService,FormulaBuilderService,prismaServiceService]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(Middleware)
-      .forRoutes(FormulabuilderController,AppController);
-
-      consumer
-      .apply(SecondMiddleware)
-      .forRoutes(AppController);
+      .apply(Middlewares)
+      .forRoutes('parser');   
   }
   
    
